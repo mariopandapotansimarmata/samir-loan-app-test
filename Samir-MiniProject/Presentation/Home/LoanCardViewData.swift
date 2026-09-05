@@ -15,6 +15,7 @@ struct LoanCardViewData {
         case unknown
     }
 
+    let id: Loan.ID
     let borrowerName: String
     let amount: String
     let interestRate: String
@@ -23,8 +24,9 @@ struct LoanCardViewData {
     let riskRating: String
     let riskStyle: RiskStyle
 
-    init(loan: LoanSummary) {
-        borrowerName = loan.borrowerName
+    init(loan: Loan) {
+        id = loan.id
+        borrowerName = loan.borrower.name
         amount = Self.numberFormatter.string(from: NSDecimalNumber(decimal: loan.amount)) ?? "—"
         interestRate = "\(Self.numberFormatter.string(from: NSDecimalNumber(decimal: loan.interestRate)) ?? "—")%"
         term = "\(loan.termInMonths) months"
