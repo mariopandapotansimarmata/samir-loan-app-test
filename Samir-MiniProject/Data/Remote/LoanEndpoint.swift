@@ -10,7 +10,8 @@ import Foundation
 enum LoanEndpoint {
     static func loans(forceRefresh: Bool) -> Endpoint<[LoanDTO]> {
         Endpoint(
-            absoluteURL: APIConfiguration.loansURL,
+            baseURL: APIConfiguration.apiBaseURL,
+            path: "json/loans.json",
             method: .get,
             headers: ["Accept": "application/json"],
             cachePolicy: forceRefresh ? .reloadIgnoringLocalCacheData : .useProtocolCachePolicy
