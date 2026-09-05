@@ -5,8 +5,16 @@
 //  Created by Mario Pandapotan Simarmata on 05/09/26.
 //
 
+import UIKit
+
 final class AppContainer {
     private let networkManager: NetworkManaging
+    private let navigationController: UINavigationController
+
+    lazy var appCoordinator = AppCoordinator(
+        navigationController: navigationController,
+        appContainer: self
+    )
 
     private lazy var documentURLResolver = DocumentURLResolver(
         baseURL: APIConfiguration.documentBaseURL
@@ -21,13 +29,21 @@ final class AppContainer {
     private lazy var fetchLoansUseCase: FetchLoansUseCase = DefaultFetchLoansUseCase(
         repository: loanRepository
     )
-
-    init(networkManager: NetworkManaging = URLSessionNetworkManager()) {
+    init(
+        navigationController: UINavigationController,
+        networkManager: NetworkManaging = URLSessionNetworkManager()
+    ) {
+        self.navigationController = navigationController
         self.networkManager = networkManager
     }
 
     func makeHomeViewController() -> HomeViewController {
         let viewModel = HomeViewModel(fetchLoansUseCase: fetchLoansUseCase)
-        return HomeViewController(viewModel: viewModel)
+        return HomeViewController(viewModel: viewModel, appContainer: self)
+    }
+
+    func makeLoanDetailViewController(loan: Loan) -> LoanDetailViewController {
+        let viewModel = LoanDetailViewModel(loan: loan)
+        return LoanDetailViewController(viewModel: viewModel)
     }
 }

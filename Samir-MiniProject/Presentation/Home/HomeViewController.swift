@@ -9,9 +9,9 @@ import Combine
 import UIKit
 
 final class HomeViewController: UIViewController {
-    
     private let viewModel: HomeViewModel
-    private var loanCards: [LoanCardViewData] = []
+    private unowned let appContainer: AppContainer
+    private var loans: [Loan] = []
     private var cancellables = Set<AnyCancellable>()
 
     private lazy var refreshControl: UIRefreshControl = {
@@ -29,6 +29,7 @@ final class HomeViewController: UIViewController {
         tableView.estimatedRowHeight = 190
         tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.refreshControl = refreshControl
         tableView.register(LoanCardCell.self, forCellReuseIdentifier: LoanCardCell.reuseIdentifier)
         return tableView
@@ -84,8 +85,9 @@ final class HomeViewController: UIViewController {
         return containerView
     }()
 
-    init(viewModel: HomeViewModel) {
+    init(viewModel: HomeViewModel, appContainer: AppContainer) {
         self.viewModel = viewModel
+        self.appContainer = appContainer
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -120,38 +122,59 @@ final class HomeViewController: UIViewController {
     }
 
     private func bindViewModel() {
-        viewModel.$state
-            .sink { [weak self] state in
-                self?.render(state)
+        Publishers.CombineLatest3(
+            viewModel.$loans,
+            viewModel.$isLoading,
+            viewModel.$errorMessage
+        )
+            .sink { [weak self] loans, isLoading, errorMessage in
+                self?.render(
+                    loans: loans,
+                    isLoading: isLoading,
+                    errorMessage: errorMessage
+                )
             }
             .store(in: &cancellables)
     }
 
-    private func render(_ state: HomeViewModel.State) {
-        switch state {
-        case .idle:
-            break
-        case .loading:
-            guard loanCards.isEmpty else { return }
+    private func render(
+        loans: [Loan],
+        isLoading: Bool,
+        errorMessage: String?
+    ) {
+        self.loans = loans
+
+        if isLoading, loans.isEmpty {
             showState(message: "Loading loans...", isLoading: true, canRetry: false)
-        case let .content(viewData):
-            refreshControl.endRefreshing()
-            loanCards = viewData
-            tableView.backgroundView = nil
-            tableView.reloadData()
-        case .empty:
-            refreshControl.endRefreshing()
-            loanCards = []
-            tableView.reloadData()
-            showState(message: "No loans available.", isLoading: false, canRetry: false)
-        case let .error(message):
+            return
+        }
+
+        if let errorMessage {
             refreshControl.endRefreshing()
 
-            if loanCards.isEmpty {
-                showState(message: message, isLoading: false, canRetry: true)
+            if loans.isEmpty {
+                showState(message: errorMessage, isLoading: false, canRetry: true)
             } else {
-                presentRefreshError(message)
+                tableView.backgroundView = nil
+                tableView.reloadData()
+                presentRefreshError(errorMessage)
             }
+            return
+        }
+
+        guard !isLoading else {
+            tableView.backgroundView = nil
+            tableView.reloadData()
+            return
+        }
+
+        refreshControl.endRefreshing()
+        tableView.reloadData()
+
+        if loans.isEmpty {
+            showState(message: "No loans available.", isLoading: false, canRetry: false)
+        } else {
+            tableView.backgroundView = nil
         }
     }
 
@@ -190,9 +213,16 @@ final class HomeViewController: UIViewController {
     }
 }
 
+extension HomeViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        appContainer.appCoordinator.navigateToLoanDetailScreen(loan: loans[indexPath.row])
+    }
+}
+
 extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        loanCards.count
+        loans.count
     }
 
     func tableView(
@@ -206,7 +236,7 @@ extension HomeViewController: UITableViewDataSource {
             return UITableViewCell()
         }
 
-        cell.configure(with: loanCards[indexPath.row])
+        cell.configure(with: LoanCardViewData(loan: loans[indexPath.row]))
         return cell
     }
 }

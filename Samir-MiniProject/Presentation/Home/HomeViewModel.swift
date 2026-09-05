@@ -10,15 +10,9 @@ import Foundation
 
 @MainActor
 final class HomeViewModel {
-    enum State {
-        case idle
-        case loading
-        case content([LoanCardViewData])
-        case empty
-        case error(String)
-    }
-
-    @Published private(set) var state: State = .idle
+    @Published private(set) var loans: [Loan] = []
+    @Published private(set) var isLoading = false
+    @Published private(set) var errorMessage: String?
 
     private let fetchLoansUseCase: FetchLoansUseCase
     private var loadTask: Task<Void, Never>?
@@ -33,7 +27,8 @@ final class HomeViewModel {
 
     func loadLoans(forceRefresh: Bool = false) {
         loadTask?.cancel()
-        state = .loading
+        isLoading = true
+        errorMessage = nil
 
         let fetchLoansUseCase = fetchLoansUseCase
         loadTask = Task { [weak self, fetchLoansUseCase] in
@@ -42,7 +37,7 @@ final class HomeViewModel {
                 try Task.checkCancellation()
                 guard let self else { return }
 
-                let sortedLoans = loans.sorted {
+                self.loans = loans.sorted {
                     if $0.termInMonths != $1.termInMonths {
                         return $0.termInMonths < $1.termInMonths
                     }
@@ -54,14 +49,14 @@ final class HomeViewModel {
 
                     return $0.id < $1.id
                 }
-                let viewData = sortedLoans.map { LoanCardViewData(loan: $0) }
-                state = viewData.isEmpty ? .empty : .content(viewData)
+                self.isLoading = false
             } catch is CancellationError {
                 return
             } catch NetworkError.cancelled {
                 return
             } catch {
-                self?.state = .error(error.localizedDescription)
+                self?.errorMessage = error.localizedDescription
+                self?.isLoading = false
             }
         }
     }
