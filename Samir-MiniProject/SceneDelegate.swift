@@ -21,7 +21,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationController = UINavigationController()
         navigationController.navigationBar.prefersLargeTitles = true
         
-        let appCoordinator = AppCoordinator(navigationController: navigationController)
+        let appContainer = AppContainer()
+        let appCoordinator = AppCoordinator(
+            navigationController: navigationController,
+            appContainer: appContainer
+        )
         let window = UIWindow(windowScene: windowScene)
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
@@ -62,4 +66,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
 }
-

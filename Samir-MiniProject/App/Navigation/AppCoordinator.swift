@@ -9,9 +9,11 @@ import UIKit
 
 final class AppCoordinator: Coordinator {
     let navigationController: UINavigationController
+    private let appContainer: AppContainer
 
-    init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController, appContainer: AppContainer) {
         self.navigationController = navigationController
+        self.appContainer = appContainer
     }
 
     func start() {
@@ -19,13 +21,7 @@ final class AppCoordinator: Coordinator {
     }
 
     private func showHome() {
-        #if DEBUG
-        let loans = HomePreviewData.loans
-        #else
-        let loans: [LoanSummary] = []
-        #endif
-
-        let viewController = HomeViewController(loans: loans)
+        let viewController = appContainer.makeHomeViewController()
         navigationController.setViewControllers([viewController], animated: false)
     }
 }
