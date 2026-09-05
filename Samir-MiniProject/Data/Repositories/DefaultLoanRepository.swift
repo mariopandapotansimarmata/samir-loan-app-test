@@ -28,13 +28,4 @@ final class DefaultLoanRepository: LoanRepository {
         return loans
     }
 
-    func loan(id: Loan.ID) async throws -> Loan {
-        let loans = try await fetchLoans(forceRefresh: false)
-
-        guard let loan = loans.first(where: { $0.id == id }) else {
-            throw LoanRepositoryError.loanNotFound
-        }
-
-        return loan
-    }
 }
