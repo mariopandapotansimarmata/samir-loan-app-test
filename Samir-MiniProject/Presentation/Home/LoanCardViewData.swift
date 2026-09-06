@@ -9,9 +9,11 @@ import Foundation
 
 struct LoanCardViewData {
     enum RiskStyle {
-        case low
-        case medium
-        case high
+        case a
+        case b
+        case c
+        case d
+        case e
         case unknown
     }
 
@@ -27,19 +29,23 @@ struct LoanCardViewData {
     init(loan: Loan) {
         id = loan.id
         borrowerName = loan.borrower.name
-        amount = Self.numberFormatter.string(from: NSDecimalNumber(decimal: loan.amount)) ?? "—"
+        amount = "$\(Self.numberFormatter.string(from: NSDecimalNumber(decimal: loan.amount)) ?? "—")"
         interestRate = "\(Self.numberFormatter.string(from: NSDecimalNumber(decimal: loan.interestRate)) ?? "—")%"
         term = "\(loan.termInMonths) months"
         purpose = loan.purpose
         riskRating = "Risk \(loan.riskRating.displayValue)"
 
         switch loan.riskRating {
-        case .a, .b:
-            riskStyle = .low
+        case .a:
+            riskStyle = .a
+        case .b:
+            riskStyle = .b
         case .c:
-            riskStyle = .medium
-        case .d, .e:
-            riskStyle = .high
+            riskStyle = .c
+        case .d:
+            riskStyle = .d
+        case .e:
+            riskStyle = .e
         case .unknown:
             riskStyle = .unknown
         }

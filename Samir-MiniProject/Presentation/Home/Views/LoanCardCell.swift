@@ -30,7 +30,7 @@ final class LoanCardCell: UITableViewCell {
     private let purposeLabel = LoanCardCell.makeLabel(textStyle: .body, color: .label)
 
     private let riskLabel: UILabel = {
-        let label = makeLabel(textStyle: .caption1, color: .label)
+        let label = makeLabel(textStyle: .caption1, color: .white)
         label.textAlignment = .center
         label.layer.cornerRadius = 10
         label.layer.cornerCurve = .continuous
@@ -109,19 +109,21 @@ final class LoanCardCell: UITableViewCell {
     }
 
     private func applyRiskStyle(_ style: LoanCardViewData.RiskStyle) {
+        riskLabel.textColor = .white
+
         switch style {
-        case .low:
-            riskLabel.textColor = .systemGreen
-            riskLabel.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.12)
-        case .medium:
-            riskLabel.textColor = .systemOrange
-            riskLabel.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.14)
-        case .high:
-            riskLabel.textColor = .systemRed
-            riskLabel.backgroundColor = UIColor.systemRed.withAlphaComponent(0.12)
+        case .a:
+            riskLabel.backgroundColor = .systemGreen
+        case .b:
+            riskLabel.backgroundColor = .systemBlue
+        case .c:
+            riskLabel.backgroundColor = .systemBrown
+        case .d:
+            riskLabel.backgroundColor = .systemPurple
+        case .e:
+            riskLabel.backgroundColor = .systemRed
         case .unknown:
-            riskLabel.textColor = .secondaryLabel
-            riskLabel.backgroundColor = .tertiarySystemFill
+            riskLabel.backgroundColor = .systemGray
         }
     }
 
