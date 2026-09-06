@@ -22,9 +22,7 @@ final class AppCoordinator: Coordinator {
     }
 
     private func showHome() {
-        let viewModel = HomeViewModel(
-            fetchLoansUseCase: appContainer.fetchLoansUseCase
-        )
+        let viewModel = HomeViewModel(fetchLoansUseCase: appContainer.fetchLoansUseCase)
         let viewController = HomeViewController(
             viewModel: viewModel,
             appContainer: appContainer

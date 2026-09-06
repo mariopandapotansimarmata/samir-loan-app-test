@@ -14,6 +14,18 @@ final class HomeViewController: UIViewController {
     private var loans: [Loan] = []
     private var cancellables = Set<AnyCancellable>()
 
+    private lazy var sortButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            image: UIImage(systemName: "arrow.up.arrow.down"),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        button.accessibilityLabel = "Sort loans"
+        button.menu = makeSortMenu()
+        return button
+    }()
+
     private lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshLoans), for: .valueChanged)
@@ -108,6 +120,7 @@ final class HomeViewController: UIViewController {
         title = "Loans"
         view.backgroundColor = .systemGroupedBackground
         navigationItem.largeTitleDisplayMode = .always
+        navigationItem.rightBarButtonItem = sortButton
     }
 
     private func configureLayout() {
@@ -135,6 +148,32 @@ final class HomeViewController: UIViewController {
                 )
             }
             .store(in: &cancellables)
+
+        viewModel.$selectedSort
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] selectedSort in
+                self?.updateSortMenu(selectedSort: selectedSort)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func makeSortMenu() -> UIMenu {
+        let actions = LoanSort.allCases.map { [weak self] sort in
+            UIAction(
+                title: sort.title,
+                state: (self?.viewModel.selectedSort == sort) ? .on : .off
+            ) { _ in
+                self?.viewModel.sortLoans(by: sort)
+            }
+        }
+
+        return UIMenu(title: "Sort by", children: actions)
+    }
+
+    private func updateSortMenu(selectedSort: LoanSort) {
+        sortButton.menu = makeSortMenu()
+        sortButton.accessibilityValue = selectedSort.title
     }
 
     private func render(
@@ -210,6 +249,23 @@ final class HomeViewController: UIViewController {
     @objc
     private func retryLoading() {
         viewModel.loadLoans(forceRefresh: true)
+    }
+}
+
+private extension LoanSort {
+    var title: String {
+        switch self {
+        case .none:
+            return "None"
+        case .amountAscending:
+            return "Amount: Lowest"
+        case .amountDescending:
+            return "Amount: Highest"
+        case .termAscending:
+            return "Term: Shortest"
+        case .termDescending:
+            return "Term: Longest"
+        }
     }
 }
 
