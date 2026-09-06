@@ -22,12 +22,19 @@ final class AppCoordinator: Coordinator {
     }
 
     private func showHome() {
-        let viewController = appContainer.makeHomeViewController()
+        let viewModel = HomeViewModel(
+            fetchLoansUseCase: appContainer.fetchLoansUseCase
+        )
+        let viewController = HomeViewController(
+            viewModel: viewModel,
+            appContainer: appContainer
+        )
         navigationController.setViewControllers([viewController], animated: false)
     }
 
     func navigateToLoanDetailScreen(loan: Loan) {
-        let viewController = appContainer.makeLoanDetailViewController(loan: loan)
+        let viewModel = LoanDetailViewModel(loan: loan)
+        let viewController = LoanDetailViewController(viewModel: viewModel)
         viewController.onDocumentSelected = { [weak self] url in
             self?.showDocumentPreview(url: url)
         }

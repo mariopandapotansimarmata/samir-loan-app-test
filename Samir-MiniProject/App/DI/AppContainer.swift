@@ -26,24 +26,15 @@ final class AppContainer {
         networkManager: networkManager,
         mapper: loanMapper
     )
-    private lazy var fetchLoansUseCase: FetchLoansUseCase = DefaultFetchLoansUseCase(
+    private(set) lazy var fetchLoansUseCase: FetchLoansUseCase = DefaultFetchLoansUseCase(
         repository: loanRepository
     )
+
     init(
         navigationController: UINavigationController,
         networkManager: NetworkManaging = URLSessionNetworkManager()
     ) {
         self.navigationController = navigationController
         self.networkManager = networkManager
-    }
-
-    func makeHomeViewController() -> HomeViewController {
-        let viewModel = HomeViewModel(fetchLoansUseCase: fetchLoansUseCase)
-        return HomeViewController(viewModel: viewModel, appContainer: self)
-    }
-
-    func makeLoanDetailViewController(loan: Loan) -> LoanDetailViewController {
-        let viewModel = LoanDetailViewModel(loan: loan)
-        return LoanDetailViewController(viewModel: viewModel)
     }
 }
