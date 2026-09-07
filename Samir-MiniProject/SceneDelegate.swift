@@ -12,6 +12,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     private var appContainer: AppContainer?
+    private var appCoordinator: AppCoordinator?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -21,15 +22,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationController = UINavigationController()
         navigationController.navigationBar.prefersLargeTitles = true
         
-        let appContainer = AppContainer(navigationController: navigationController)
+        let appContainer = AppContainer()
+        let appCoordinator = AppCoordinator(
+            navigationController: navigationController,
+            appContainer: appContainer
+        )
         let window = UIWindow(windowScene: windowScene)
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
         
         self.appContainer = appContainer
+        self.appCoordinator = appCoordinator
         self.window = window
         
-        appContainer.appCoordinator.start()
+        appCoordinator.start()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

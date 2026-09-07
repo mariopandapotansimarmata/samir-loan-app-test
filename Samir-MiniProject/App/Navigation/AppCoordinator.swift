@@ -10,7 +10,7 @@ import UIKit
 
 final class AppCoordinator: Coordinator {
     let navigationController: UINavigationController
-    private unowned let appContainer: AppContainer
+    private let appContainer: AppContainer
 
     init(navigationController: UINavigationController, appContainer: AppContainer) {
         self.navigationController = navigationController
@@ -25,21 +25,25 @@ final class AppCoordinator: Coordinator {
         let viewModel = HomeViewModel(fetchLoansUseCase: appContainer.fetchLoansUseCase)
         let viewController = HomeViewController(
             viewModel: viewModel,
-            appContainer: appContainer
+            coordinator: self
         )
         navigationController.setViewControllers([viewController], animated: false)
     }
+}
 
-    func navigateToLoanDetailScreen(loan: Loan) {
+extension AppCoordinator: HomeCoordinating {
+    func showLoanDetail(for loan: Loan) {
         let viewModel = LoanDetailViewModel(loan: loan)
-        let viewController = LoanDetailViewController(viewModel: viewModel)
-        viewController.onDocumentSelected = { [weak self] url in
-            self?.showDocumentPreview(url: url)
-        }
+        let viewController = LoanDetailViewController(
+            viewModel: viewModel,
+            coordinator: self
+        )
         navigationController.pushViewController(viewController, animated: true)
     }
+}
 
-    private func showDocumentPreview(url: URL) {
+extension AppCoordinator: LoanDetailCoordinating {
+    func showDocumentPreview(for url: URL) {
         let viewController = SFSafariViewController(url: url)
         navigationController.present(viewController, animated: true)
     }

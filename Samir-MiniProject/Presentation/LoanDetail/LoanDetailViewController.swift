@@ -9,9 +9,8 @@ import Combine
 import UIKit
 
 final class LoanDetailViewController: UIViewController {
-    var onDocumentSelected: ((URL) -> Void)?
-
     private let viewModel: LoanDetailViewModel
+    private weak var coordinator: LoanDetailCoordinating?
     private var viewData: LoanDetailViewData?
     private var cancellables = Set<AnyCancellable>()
 
@@ -29,8 +28,12 @@ final class LoanDetailViewController: UIViewController {
         return tableView
     }()
 
-    init(viewModel: LoanDetailViewModel) {
+    init(
+        viewModel: LoanDetailViewModel,
+        coordinator: LoanDetailCoordinating
+    ) {
         self.viewModel = viewModel
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -189,7 +192,7 @@ extension LoanDetailViewController: UITableViewDelegate {
             return
         }
 
-        onDocumentSelected?(document.url)
+        coordinator?.showDocumentPreview(for: document.url)
     }
 }
 

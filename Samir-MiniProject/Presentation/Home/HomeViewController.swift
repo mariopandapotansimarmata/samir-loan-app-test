@@ -10,7 +10,7 @@ import UIKit
 
 final class HomeViewController: UIViewController {
     private let viewModel: HomeViewModel
-    private unowned let appContainer: AppContainer
+    private weak var coordinator: HomeCoordinating?
     private var loans: [Loan] = []
     private var cancellables = Set<AnyCancellable>()
 
@@ -97,9 +97,12 @@ final class HomeViewController: UIViewController {
         return containerView
     }()
 
-    init(viewModel: HomeViewModel, appContainer: AppContainer) {
+    init(
+        viewModel: HomeViewModel,
+        coordinator: HomeCoordinating
+    ) {
         self.viewModel = viewModel
-        self.appContainer = appContainer
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -272,7 +275,7 @@ private extension LoanSort {
 extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        appContainer.appCoordinator.navigateToLoanDetailScreen(loan: loans[indexPath.row])
+        coordinator?.showLoanDetail(for: loans[indexPath.row])
     }
 }
 
