@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5CFCA1AE304F04EF008042AB /* netfox in Frameworks */ = {isa = PBXBuildFile; productRef = 5CFCA1AD304F04EF008042AB /* netfox */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		5CFA9E6D304BC847001FC1D3 /* Samir-MiniProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Samir-MiniProject.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CFCA1AE304F04EF008042AB /* netfox in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = "Samir-MiniProject";
 			packageProductDependencies = (
+				5CFCA1AD304F04EF008042AB /* netfox */,
 			);
 			productName = "Samir-MiniProject";
 			productReference = 5CFA9E6D304BC847001FC1D3 /* Samir-MiniProject.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = 5CFA9E64304BC847001FC1D3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5CFCA1AC304F04EF008042AB /* XCRemoteSwiftPackageReference "netfox" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5CFA9E6E304BC847001FC1D3 /* Products */;
 			projectDirPath = "";
@@ -339,6 +348,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5CFCA1AC304F04EF008042AB /* XCRemoteSwiftPackageReference "netfox" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kasketis/netfox";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.21.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5CFCA1AD304F04EF008042AB /* netfox */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5CFCA1AC304F04EF008042AB /* XCRemoteSwiftPackageReference "netfox" */;
+			productName = netfox;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5CFA9E65304BC847001FC1D3 /* Project object */;
 }

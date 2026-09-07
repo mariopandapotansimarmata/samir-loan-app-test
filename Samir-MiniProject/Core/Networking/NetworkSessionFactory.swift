@@ -7,7 +7,7 @@
 
 import Foundation
 
-#if canImport(netfox) && NETFOX_ENABLED
+#if DEBUG && canImport(netfox)
 import netfox
 #endif
 
@@ -19,14 +19,14 @@ enum NetworkSessionFactory {
         configuration.timeoutIntervalForResource = 60
         configuration.waitsForConnectivity = true
 
-        #if canImport(netfox) && NETFOX_ENABLED
+        #if DEBUG && canImport(netfox)
         addNetfoxProtocolIfNeeded(to: configuration)
         #endif
 
         return URLSession(configuration: configuration)
     }
 
-    #if canImport(netfox) && NETFOX_ENABLED
+    #if DEBUG && canImport(netfox)
     private static func addNetfoxProtocolIfNeeded(to configuration: URLSessionConfiguration) {
         var protocolClasses = configuration.protocolClasses ?? []
         let containsNetfox = protocolClasses.contains {
